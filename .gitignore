@@ -1,0 +1,8 @@
+# all
+.env
+
+# python
+__pycache__/
+
+# typescript
+node_modules/
