@@ -4,6 +4,7 @@ from aiohttp import ClientSession
 from crescent import Client
 from dotenv import load_dotenv
 from hikari import ModalInteraction, RESTBot
+from hikari.api import InteractionMessageBuilder
 
 
 def main() -> None:
@@ -14,11 +15,14 @@ def main() -> None:
 
     client.plugins.load("src.plugins.__main__")
 
-    bot.set_listener(ModalInteraction, handle_preview_modal) # type: ignore
+    bot.set_listener(ModalInteraction, handle_preview_modal)  # type: ignore
 
     bot.run()
 
-async def handle_preview_modal(inter: ModalInteraction):
+
+async def handle_preview_modal(
+    inter: ModalInteraction,
+) -> InteractionMessageBuilder | None:
     if inter.custom_id == f"preview_modal:{inter.user.id}":
         async with ClientSession() as session:
             data = {}
@@ -36,6 +40,7 @@ async def handle_preview_modal(inter: ModalInteraction):
                     response.set_content(await res.text())
 
                 return response
+
 
 if __name__ == "__main__":
     main()
