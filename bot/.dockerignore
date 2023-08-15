@@ -1,0 +1,4 @@
+*
+!poetry*
+!pyproject.toml
+!src*
