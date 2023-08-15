@@ -36,7 +36,7 @@ RegisterRoutes(app)
 async function main() {
     for (const preview of await prisma.preview.findMany()) {
         app.use(`/${preview.id}`, (_req: Request, res: Response) => {
-            res.send(preview.content).redirect("https://github.com/spifory/tags")
+            res.send(preview.content)
         })
     }
     await prisma.$connect()

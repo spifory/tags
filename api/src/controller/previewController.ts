@@ -17,7 +17,7 @@ export class PreviewsController extends Controller {
         const created = await new PreviewService().create(requestBody)
 
         app.use(`/${created.id}`, (_req: ExRequest, res: ExResponse) => {
-            return res.send(created.content).redirect("https://github.com/spifory/tags")
+            return res.send(created.content)
         })
         return created as Preview
     }
