@@ -1,0 +1,10 @@
+*
+!src*
+!prisma*
+!entrypoint.sh
+!yarn*
+!package.json
+!tsconfig.json
+!tsoa.json
+!tsup.config.ts
+!.env
