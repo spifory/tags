@@ -1,0 +1,14 @@
+datasource db {
+    provider = "postgresql"
+    url = env("DB_URI")
+}
+
+generator client {
+    provider = "prisma-client-js"
+}
+
+model Preview {
+    id String @id // uuid for url
+    authorID String // this is specified in case the person wants this deleted
+    content String // contains the tags
+}

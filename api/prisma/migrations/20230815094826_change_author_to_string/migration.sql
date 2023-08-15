@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "Preview" ALTER COLUMN "authorID" SET DATA TYPE TEXT;
