@@ -17,8 +17,9 @@ ruff = "^0.0.284"
 black = "^23.7.0"
 
 [tool.ruff]
-select = ["F", "E", "I", "ANN", "Q", "TID", "ARG"]
+select = ["ALL"]
 ignore = ["ANN101", "ANN102"]
+max-line-length = 100
 
 [tool.ruff.per-file-ignores]
 "__init__.py" = ["F403"]

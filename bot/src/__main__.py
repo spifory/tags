@@ -1,13 +1,19 @@
+from __future__ import annotations
+
 from os import environ
+from typing import TYPE_CHECKING
 
 from aiohttp import ClientSession
 from crescent import Client
 from dotenv import load_dotenv
 from hikari import ModalInteraction, RESTBot
-from hikari.api import InteractionMessageBuilder
+
+if TYPE_CHECKING:
+    from hikari.api import InteractionMessageBuilder
 
 
 def main() -> None:
+    """Begin the bot's process."""
     load_dotenv()
 
     bot = RESTBot(token=environ["BOT_TOKEN"], public_key=environ["PUBLIC_KEY"])
@@ -23,6 +29,7 @@ def main() -> None:
 async def handle_preview_modal(
     inter: ModalInteraction,
 ) -> InteractionMessageBuilder | None:
+    """Control all preview modals."""
     if inter.custom_id == f"preview_modal:{inter.user.id}":
         async with ClientSession() as session:
             data = {}
@@ -40,6 +47,8 @@ async def handle_preview_modal(
                     response.set_content(await res.text())
 
                 return response
+    else:
+        return None
 
 
 if __name__ == "__main__":
