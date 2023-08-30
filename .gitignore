@@ -1,6 +1,7 @@
 # all
 .env
-.vscode
+.vscode/
+.idea/
 
 # python
 __pycache__/
