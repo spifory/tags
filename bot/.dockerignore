@@ -1,4 +1,6 @@
 *
+!.env
 !poetry*
 !pyproject.toml
+!entrypoint.sh
 !src*

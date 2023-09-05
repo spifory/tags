@@ -12,5 +12,4 @@ RUN poetry install --only=main --no-interaction --no-root
 
 COPY . .
 
-ENTRYPOINT ["poetry", "run", "python"]
-CMD ["-O", "-m", "src"]
+CMD [ "sh", "./entrypoint.sh" ]
