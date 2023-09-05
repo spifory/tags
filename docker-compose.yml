@@ -1,0 +1,42 @@
+version: '3'
+
+services:
+  postgres:
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_DB: api
+      PGDATA: /var/lib/postgresql/data/pgdata
+      PGPORT: 7269
+    volumes:
+      - ./pg_data:/var/lib/postgresql/data
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    pull_policy: build
+    environment:
+      AUTH_KEY: $AUTH_KEY # this will have use when I add authentication soon
+      DB_URI: postgresql://postgres:postgres@postgres:7269/api
+    ports:
+      - "127.0.0.1:9302:9302"
+    depends_on:
+      - postgres
+  bot:
+    restart: unless-stopped
+    pull_policy: build
+    depends_on:
+      - api
+    environment:
+      BOT_TOKEN: $BOT_TOKEN
+      PUBLIC_KEY: $PUBLIC_KEY
+      API_AUTH_KEY: $API_AUTH_KEY
+      API_URL: $API_URL
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    ports:
+      - "127.0.0.1:2830:2830"
