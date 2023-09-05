@@ -15,8 +15,8 @@ export const log = pino({
 })
 export const prisma = new PrismaClient()
 
-app.listen(3000, () => {
-    log.info("API listening at http://localhost:3000")
+app.listen(9302, () => {
+    log.info("API listening at http://127.0.0.1:9302")
 })
 
 app.use("/docs", swaggerUi.serve, async (_req: Request, res: Response) => {
