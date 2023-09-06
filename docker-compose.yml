@@ -38,4 +38,4 @@ services:
       context: ./bot
       dockerfile: Dockerfile
     ports:
-      - "127.0.0.1:2830:2830"
+      - "127.0.0.1:2830:8080"

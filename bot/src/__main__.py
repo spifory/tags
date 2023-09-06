@@ -23,7 +23,7 @@ def main() -> None:
 
     bot.set_listener(ModalInteraction, handle_preview_modal)  # type: ignore
 
-    bot.run(port=2830)
+    bot.run()
 
 
 async def handle_preview_modal(
