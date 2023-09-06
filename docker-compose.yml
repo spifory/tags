@@ -9,7 +9,6 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_DB: api
       PGDATA: /var/lib/postgresql/data/pgdata
-      PGPORT: 7269
     volumes:
       - ./pg_data:/var/lib/postgresql/data
   api:
@@ -20,7 +19,7 @@ services:
     pull_policy: build
     environment:
       AUTH_KEY: $AUTH_KEY # this will have use when I add authentication soon
-      DB_URI: postgresql://postgres:postgres@postgres:7269/api
+      DB_URI: postgresql://postgres:postgres@postgres:5432/api
     ports:
       - "127.0.0.1:9302:9302"
     depends_on:
