@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Path, Post, Route, SuccessResponse } from 'tsoa';
+import { Body, Controller, Delete, Get, Path, Post, Query, Route, SuccessResponse } from 'tsoa';
 
 import { Preview } from '../previews/previews';
 import { PreviewCreationParams, PreviewService } from '../previews/previewService';
@@ -28,16 +28,11 @@ export class PreviewsController extends Controller {
         return created as Preview
     }
 
-    /**
-     * Delete a preview.
-     * @param id The ID of the preview.
-     * @param authorID The author ID of the preview.
-     */
-    @Delete('{id}')
+    @Delete('{authorID}')
     @SuccessResponse(204, 'Deleted')
     public async deletePreview(
-        @Path() id: string,
-        @Body() authorID: string
+        @Path() authorID: string,
+        @Query() id: string,
     ): Promise<null> {
         this.setStatus(204)
         return await new PreviewService().delete(id, authorID)
