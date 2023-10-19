@@ -1,11 +1,13 @@
 """The main file for the bot's commands."""
 
 from logging import getLogger
+from typing import cast
 
-from crescent import Context, Group, Plugin, command, option
-from hikari import Message, TextInputStyle
+from crescent import AutocompleteContext, Context, Group, Plugin, command, option
+from hikari import AutocompleteInteractionOption, Message, TextInputStyle
 
 from src.impl.bot import Bot
+from src.impl.http_types import PreviewResponse
 
 plugin = Plugin[Bot, None]()
 LOG = getLogger(__name__)
@@ -17,6 +19,7 @@ TAGS_PREVIEW = """
 """
 
 previews = Group("previews")
+
 
 @plugin.include
 @command(description="Preview what your Meta/OpenGraph tags will look like on Discord.")
@@ -37,6 +40,24 @@ async def preview(ctx: Context) -> None:
         component=modal,
     )
 
+
+async def user_previews_autocomplete(
+    ctx: AutocompleteContext,
+    option: AutocompleteInteractionOption,
+) -> list[tuple[str, str]] | list:
+    async with plugin.app.http_session.get(f"/previews/{ctx.user.id}") as res:  # type: ignore[reportOptionalMemberAccess]
+        json_data = cast(list[PreviewResponse], await res.json())
+        value = cast(str, option.value)
+
+        for data in json_data:
+            return [
+                (data["id"], data["id"])
+                if data["id"].lower().startswith(value.lower())
+                else [],
+            ]
+        return []
+
+
 @plugin.include
 @previews.child
 @command(name="delete", description="Delete a preview.")
@@ -45,6 +66,7 @@ class PreviewsDelete:
 
     preview_id = option(
         option_type=str,
+        autocomplete=user_previews_autocomplete,
     )
 
     async def callback(self, ctx: Context) -> Message | None:
