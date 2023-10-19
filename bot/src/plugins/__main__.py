@@ -37,10 +37,9 @@ async def preview(ctx: Context) -> None:
         component=modal,
     )
 
-
 @plugin.include
 @previews.child
-@command(name="delete")
+@command(name="delete", description="Delete a preview.")
 class PreviewsDelete:
     """Delete a preview."""
 
