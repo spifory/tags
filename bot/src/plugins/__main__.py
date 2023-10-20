@@ -1,17 +1,24 @@
 """The main file for the bot's commands."""
 
 from logging import getLogger
+from typing import cast
 
-from crescent import Context, Plugin, command
-from hikari import RESTBot, TextInputStyle
+from crescent import AutocompleteContext, Context, Group, Plugin, command, option
+from hikari import AutocompleteInteractionOption, Message, TextInputStyle
 
-plugin = Plugin[RESTBot, None]()
+from src.impl.bot import Bot
+from src.impl.http_types import PreviewResponse
+
+plugin = Plugin[Bot, None]()
 LOG = getLogger(__name__)
+NO_CONTENT_STATUS = 204
 
 TAGS_PREVIEW = """
-<meta name="title" content="name of the site" />
-<meta name="description" content="the site!" />
+<meta name="title" content="name of the site">
+<meta name="description" content="the site!">
 """
+
+previews = Group("previews")
 
 
 @plugin.include
@@ -32,6 +39,57 @@ async def preview(ctx: Context) -> None:
         custom_id=f"preview_modal:{ctx.user.id}",
         component=modal,
     )
+
+
+async def user_previews_autocomplete(
+    ctx: AutocompleteContext,
+    option: AutocompleteInteractionOption,
+) -> list[tuple[str, str]] | list:
+    async with plugin.app.http_session.get(f"/previews/{ctx.user.id}") as res:
+        json_data = cast(list[PreviewResponse], await res.json())
+        value = cast(str, option.value)
+
+        for data in json_data:
+            return [
+                (data["id"], data["id"])
+                if data["id"].lower().startswith(value.lower())
+                else [],
+            ]
+        return []
+
+
+@plugin.include
+@previews.child
+@command(name="delete", description="Delete a preview.")
+class PreviewsDelete:
+    """Delete a preview."""
+
+    preview_id = option(
+        option_type=str,
+        autocomplete=user_previews_autocomplete,
+    )
+
+    async def callback(self, ctx: Context) -> Message | None:
+        """Control callback for `/previews delete`."""
+        req = await self.delete_preview(preview_id=self.preview_id, user_id=ctx.user.id)
+
+        if not req:
+            return await ctx.respond(
+                f"`{self.preview_id}` is an invalid ID. Make use of the autocomplete.",
+                ephemeral=True,
+            )
+        return await ctx.respond(f"`{self.preview_id}` deleted", ephemeral=True)
+
+    async def delete_preview(self, *, preview_id: str, user_id: int) -> bool:
+        """Delete and check if preview is deleted.
+
+        This is its own function to avoid lots of indentation.
+        """
+        async with plugin.app.http_session.delete(
+            url=f"/previews/{user_id}?id={preview_id}",
+        ) as res:
+            # DELETE /previews returns 204, so this function won't return any response.
+            return res.status == NO_CONTENT_STATUS
 
 
 @plugin.load_hook
