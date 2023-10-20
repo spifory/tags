@@ -18,13 +18,22 @@ class Bot(RESTBot):
     def __init__(self) -> None:
         """Initiate the `Bot` class."""
         super().__init__(token=environ["BOT_TOKEN"], public_key=environ["PUBLIC_KEY"])
-        self.http_session: ClientSession | None = None
+        self._http_session: ClientSession | None = None
 
     async def start(self, *args: Any, **kwargs: Any) -> None:
         """Control the starting process of the bot."""
-        self.http_session = ClientSession(base_url=environ["API_URL"])
+        self._http_session = ClientSession(base_url=environ["API_URL"])
 
         return await super().start(*args, **kwargs)
+
+    @property
+    def http_session(self) -> ClientSession:
+        """Shared session for sending HTTP requests."""
+        if not self._http_session:
+            msg = "Cannot use `http_session` without the bot logging in."
+            raise RuntimeError(msg)
+
+        return self._http_session
 
     async def handle_preview_modal(
         self,
@@ -36,7 +45,7 @@ class Bot(RESTBot):
             data["authorID"] = inter.user.id
             data["content"] = inter.components[0].components[0].value
 
-            async with self.http_session.post("/previews", data=data) as res: # type: ignore[reportOptionalMemberAccess]
+            async with self.http_session.post("/previews", data=data) as res:
                 response = inter.build_response()
                 json = await res.json()
 
