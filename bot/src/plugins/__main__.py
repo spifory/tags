@@ -64,7 +64,7 @@ class PreviewsDelete:
 
         This is its own function to avoid lots of indentation.
         """
-        async with plugin.app.http_session.delete(  # type: ignore[reportOptionalMemberAccess]
+        async with plugin.app.http_session.delete(
             url=f"/previews/{user_id}?id={preview_id}",
         ) as res:
             # DELETE /previews returns 204, so this function won't return any response.
